@@ -1,12 +1,13 @@
 const db = require("../db/connect");
 class Department {
-  constructor(dept_name,dept_location) {
+  constructor(dept_name, dept_location) {
     this.dept_name = dept_name;
     this.dept_location = dept_location;
   }
   create() {
-    const createSql = "INSERT INTO department (dept_name,dept_location) VALUES (?,?)";
-    const values = [this.dept_name,this.dept_location];
+    const createSql =
+      "INSERT INTO department (dept_name,dept_location) VALUES (?,?)";
+    const values = [this.dept_name, this.dept_location];
     return db.execute(createSql, values);
   }
   static findAll() {
@@ -27,8 +28,9 @@ class Department {
   }
 
   updateDepartment(dept_id) {
-    const createSql = "UPDATE department SET dept_name = ?, dept_location = ? where dept_id = ?";
-    const values = [this.dept_name,this.dept_location, dept_id];
+    const createSql =
+      "UPDATE department SET dept_name = ?, dept_location = ? where emp_id = ?";
+    const values = [this.dept_name, this.dept_location, dept_id];
     return db.execute(createSql, values);
   }
 }

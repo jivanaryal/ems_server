@@ -9,11 +9,12 @@ class Employee {
     this.middle_name = employeeData.middle_name;
     this.last_name = employeeData.last_name;
     this.dept_name = employeeData.dept_name;
+    this.image = employeeData.image;
   }
 
   create() {
     const createSql =
-      "INSERT INTO employee (dept_id, salary, job, gender, first_name, middle_name, last_name, dept_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO employee (dept_id, salary, job, gender, first_name, middle_name, last_name, dept_name,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
     const values = [
       this.dept_id,
       this.salary,
@@ -23,6 +24,7 @@ class Employee {
       this.middle_name,
       this.last_name,
       this.dept_name,
+      this.image,
     ];
 
     return db.execute(createSql, values);
@@ -33,21 +35,37 @@ class Employee {
     return db.execute(selectSql);
   }
 
-  findById(dept_id) {
+  findById(emp_id) {
     const createSql = "SELECT * FROM employee where emp_id = ?";
-    const values = [dept_id];
+    const values = [emp_id];
     return db.execute(createSql, values);
   }
 
-  deleteContact(dept_id) {
-    const createSql = "DELETE FROM employee where dept_id = ?";
-    const values = [dept_id];
+  deleteEmployee(emp_id) {
+    const createSql = "DELETE FROM employee where emp_id = ?";
+    const values = [emp_id];
     return db.execute(createSql, values);
   }
 
-  updateContact(dept_id) {
-    const createSql = "UPDATE contact_db SET emp_name = ? where dept_id = ?";
-    const values = [this.emp_name, dept_id];
+  updateContact(emp_id) {
+    // console.log(this.dept_id);
+    const createSql = `
+    UPDATE employee 
+    SET dept_id = ?, salary = ?, job = ?, gender = ?, 
+    first_name = ?, middle_name = ?, last_name = ?, dept_name = ?,image=?
+    WHERE emp_id = ? `;
+    const values = [
+      this.dept_id,
+      this.salary,
+      this.job,
+      this.gender,
+      this.first_name,
+      this.middle_name,
+      this.last_name,
+      this.dept_name,
+      this.image,
+      emp_id,
+    ];
     return db.execute(createSql, values);
   }
 }

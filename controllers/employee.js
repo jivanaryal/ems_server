@@ -11,19 +11,17 @@ const postData = async (req, res) => {
       last_name,
       dept_name,
     } = req.body;
+    const files = req.files;
+    const imagePaths = files.map((file) => file.path);
+    // const mage = JSON.stringify(imagePaths);
+    // const image = mage[0];
+
+    const image = imagePaths[0];
+    console.log(image, "hello");
+
+    console.log(dept_name, "hello");
     const { id } = req.params;
     const dept_id = id;
-    console.log(id);
-    console.log(
-      dept_id,
-      salary,
-      job,
-      gender,
-      first_name,
-      middle_name,
-      last_name,
-      dept_name
-    );
     const employeeData = {
       dept_id,
       salary,
@@ -33,6 +31,7 @@ const postData = async (req, res) => {
       middle_name,
       last_name,
       dept_name,
+      image,
     };
     const employeeModal = new Employee(employeeData);
     const createRecord = await employeeModal.create();
@@ -59,7 +58,7 @@ const getSingleData = async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
-    const EmployeeModel = new Employee();
+    const EmployeeModel = new Employee(id);
     const getSingleRecord = await EmployeeModel.findById(id);
 
     return res.status(200).json(getSingleRecord[0]);
@@ -70,9 +69,9 @@ const getSingleData = async (req, res) => {
 
 const deleteData = async (req, res) => {
   try {
-    const { dept_id } = req.params;
-    const EmployeeModel = new Employee();
-    const deleteRecord = await EmployeeModel.deleteEmployee(dept_id);
+    const { id } = req.params;
+    const EmployeeModel = new Employee(id);
+    const deleteRecord = await EmployeeModel.deleteEmployee(id);
     return res.status(200).json(deleteRecord[0]);
   } catch (error) {
     console.log(error);
@@ -80,13 +79,55 @@ const deleteData = async (req, res) => {
 };
 
 const updateData = async (req, res) => {
-  const { dept_id } = req.params;
+  const { id } = req.params;
+
+  const emp_id = id;
+  console.log(emp_id);
 
   try {
-    const { name } = req.body;
-    const EmployeeModel = new Employee(name);
-    const createRecord = await EmployeeModel.updateEmployee(dept_id);
-    return res.status(200).json(createRecord[0]);
+    const {
+      dept_id,
+      salary,
+      job,
+      gender,
+      first_name,
+      middle_name,
+      last_name,
+      dept_name,
+    } = req.body;
+    const files = req.files;
+    const imagePaths = files.map((file) => file.path);
+
+    const image = imagePaths[0];
+    console.log(image, "hello");
+
+    console.log(
+      dept_id,
+      salary,
+      job,
+      gender,
+      first_name,
+      middle_name,
+      last_name,
+      dept_name,
+      emp_id,
+      "hello"
+    );
+    const employeeData = {
+      dept_id,
+      salary,
+      job,
+      gender,
+      first_name,
+      middle_name,
+      last_name,
+      dept_name,
+      image,
+    };
+
+    const EmployeeModel = new Employee(employeeData);
+    const updateRecord = await EmployeeModel.updateContact(emp_id);
+    return res.status(200).json(updateRecord[0]);
   } catch (error) {
     console.log(error);
   }
