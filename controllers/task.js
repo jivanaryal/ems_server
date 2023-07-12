@@ -1,40 +1,38 @@
-const Employee = require("../models/employee");
+const Employee = require("../models/task");
 
 const postData = async (req, res) => {
+  const { id } = req.params;
+  const emp_id = id;
+  console.log(req.body);
   try {
     const {
-      salary,
-      job,
-      gender,
-      first_name,
-      middle_name,
-      last_name,
-      dept_name,
+      emp_name,
+      task_priority,
+      task_title,
+      task_description,
+      task_end_date,
     } = req.body;
-    const files = req.files;
-    const imagePaths = files.map((file) => file.path);
-    // const mage = JSON.stringify(imagePaths);
-    // const image = mage[0];
 
-    const image = imagePaths[0];
-    console.log(image, "hello");
+    console.log(
+      emp_id,
+      emp_name,
+      task_priority,
+      task_title,
+      task_description,
+      task_end_date
+    );
 
-    console.log(dept_name, "hello");
-    const { id } = req.params;
-    const dept_id = id;
     const employeeData = {
-      dept_id,
-      salary,
-      job,
-      gender,
-      first_name,
-      middle_name,
-      last_name,
-      dept_name,
-      image,
+      emp_id,
+      emp_name,
+      task_priority,
+      task_title,
+      task_description,
+      task_end_date,
     };
     const employeeModal = new Employee(employeeData);
     const createRecord = await employeeModal.create();
+    console.log("hello");
     return res.status(200).json({
       createRecord,
       msg: "Employee Created successfully",
@@ -72,31 +70,9 @@ const deleteData = async (req, res) => {
     const { id } = req.params;
     const EmployeeModel = new Employee(id);
     const deleteRecord = await EmployeeModel.deleteEmployee(id);
-
-    if (!deleteRecord) {
-      return res.status(404).json({
-        error: "Not Found",
-        msg: "No department found with the specified ID.",
-      });
-    }
-
-    return res.status(200).json({
-      deleteRecord,
-      msg: "Record Deleted successfully",
-    });
+    return res.status(200).json(deleteRecord[0]);
   } catch (error) {
-    if (error.code === "ER_ROW_IS_REFERENCED_2") {
-      return res.status(409).json({
-        error: "Conflict",
-        msg: "Cannot delete the department as it is referenced by employee records.",
-      });
-    } else {
-      console.log(error);
-      return res.status(500).json({
-        error: "Internal Server Error",
-        msg: error.message,
-      });
-    }
+    console.log(error);
   }
 };
 
