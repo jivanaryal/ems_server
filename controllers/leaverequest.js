@@ -9,7 +9,7 @@ const postLeaveRequest = async (req, res) => {
       emp_id,
       start_date,
       end_date,
-      emp_id,
+
       message
     );
     console.log("hello");
@@ -29,6 +29,7 @@ const updateStatus = async (req, res) => {
     const { status } = req.body;
     console.log(req.body);
     const { emp_id } = req.params;
+    const leave_id = emp_id;
     console.log(emp_id, status);
 
     const leaveRequest = new LeaveRequest(emp_id, null, null, null);

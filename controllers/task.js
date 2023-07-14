@@ -56,16 +56,14 @@ const getSingleData = async (req, res) => {
     console.log(error);
   }
 };
-
 const deleteData = async (req, res) => {
   try {
     const { id } = req.params;
-    const EmployeeModel = new Employee();
+    const EmployeeModel = new Employee(id);
     const deleteRecord = await EmployeeModel.deleteEmployee(id);
     return res.status(200).json(deleteRecord[0]);
   } catch (error) {
     console.log(error);
-    return res.status(400).json({ error: error.message });
   }
 };
 

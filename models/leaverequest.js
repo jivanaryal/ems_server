@@ -17,14 +17,9 @@ class LeaveRequest {
     }
 
     const createRequest =
-      "INSERT INTO leaverequest(emp_id,start_date,end_date,message,status)values(?,?,?,?,?)";
-    const values = [
-      this.emp_id,
-      this.start_date,
-      this.end_date,
-      this.message,
-      "pending",
-    ];
+      "INSERT INTO leaverequest(emp_id,start_date,end_date,message,status)values(?,?,?,?,'pending')";
+    const values = [this.emp_id, this.start_date, this.end_date, this.message];
+    console.log(values);
     return db.execute(createRequest, values);
   }
 
@@ -35,7 +30,7 @@ class LeaveRequest {
   }
 
   updateStatus(newStatus) {
-    const createSql = "UPDATE leaverequest SET status = ? where emp_id = ?";
+    const createSql = "UPDATE leaverequest SET status = ? where leave_id = ?";
     console.log(this.emp_id, newStatus);
     const values = [newStatus, this.emp_id];
     return db.execute(createSql, values);

@@ -5,6 +5,7 @@ const emp_router = require("./routes/employee");
 const create_router = require("./routes/createemp");
 const leave_router = require("./routes/leaverequest");
 const task_router = require("./routes/task");
+const history_router = require("./routes/task_history");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use("/api/v1/employee", emp_router);
 app.use("/api/v1/createemp", create_router);
 app.use("/api/v1/leave", leave_router);
 app.use("/api/v1/task", task_router);
+app.use("/api/v1/task_history", history_router);
 
 const port = 5000;
 

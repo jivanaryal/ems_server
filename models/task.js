@@ -63,11 +63,11 @@ class Employee {
     return db.execute(createSql, values);
   }
 
-  updateContact(task_id) {
+  async updateContact(task_id) {
     let updateSql = `
-      UPDATE task 
-      SET emp_id = ?, emp_name=?, task_priority=?, task_title=?, task_description=?, task_end_date=?, task_assign_date=STR_TO_DATE(?, '%Y-%m-%d'), status=?, task_complete=?, emp_final_remark=?
-      WHERE task_id = ?`;
+    UPDATE task 
+    SET emp_id = ?, emp_name=?, task_priority=?, task_title=?, task_description=?, task_end_date=?, task_assign_date=STR_TO_DATE(?, '%Y-%m-%d'), status=?, task_complete=?, emp_final_remark=?
+    WHERE task_id = ?`;
 
     const values = [
       this.emp_id,
@@ -83,7 +83,44 @@ class Employee {
       task_id,
     ];
 
-    return db.execute(updateSql, values);
+    console.log(values);
+
+    const taskHistorySql = `
+    INSERT INTO task_history (task_id, emp_final_remark, status, task_complete, time,emp_id)
+    VALUES (?, ?, ?, ?, NOW(),?)`;
+
+    const taskHistoryValues = [
+      task_id,
+      this.emp_final_remark,
+      this.status,
+      this.task_complete,
+      this.emp_id,
+    ];
+    console.log(taskHistorySql);
+    try {
+      // Check if the task_id exists in the task table
+      const [rows] = await db.execute(
+        "SELECT task_id FROM task WHERE task_id = ?",
+        [task_id]
+      );
+
+      if (rows.length === 0) {
+        throw new Error("Task with the specified ID does not exist.");
+      }
+
+      // Update the task in the task table
+      await db.execute(updateSql, values);
+
+      // Insert into the task_history table
+      await db.execute(taskHistorySql, taskHistoryValues);
+
+      // Return success message or desired response
+      return "Task updated and task history recorded successfully.";
+    } catch (error) {
+      // Handle the error according to your application's requirements
+      console.error(error);
+      throw error;
+    }
   }
 }
 
