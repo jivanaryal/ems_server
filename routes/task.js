@@ -5,6 +5,7 @@ const {
   getSingleData,
   deleteData,
   updateData,
+  updateEmpData,
 } = require("../controllers/task");
 
 const router = Router();
@@ -13,9 +14,8 @@ router.route("/:id").get(getSingleData);
 router.route("/").get(getData);
 
 router.route("/:id").post(postData);
-router.route("/:task_id").patch(updateData);
+router.route("/cms/:task_id").patch(updateData);
+router.route("/emp/:task_id").patch(updateEmpData);
 router.route("/:id").delete(deleteData);
-// router.post("/:id", upload.any("file"), postData);
-// router.patch("/:id", upload.any("file"), updateData);
 
 module.exports = router;

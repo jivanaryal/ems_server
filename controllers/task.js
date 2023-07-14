@@ -61,9 +61,55 @@ const deleteData = async (req, res) => {
     const { id } = req.params;
     const EmployeeModel = new Employee(id);
     const deleteRecord = await EmployeeModel.deleteEmployee(id);
-    return res.status(200).json(deleteRecord[0]);
+
+    if (!deleteRecord) {
+      return res.status(404).json({
+        error: "Not Found",
+        msg: "No record found with the specified ID.",
+      });
+    }
+
+    return res.status(200).json({
+      deleteRecord,
+      msg: "Record deleted successfully",
+    });
+  } catch (error) {
+    if (error.code === "ER_ROW_IS_REFERENCED_2") {
+      return res.status(409).json({
+        error: "Conflict",
+        msg: "Cannot delete the record as it is referenced by other records.",
+      });
+    } else {
+      console.log(error);
+      return res.status(500).json({
+        error: "Internal Server Error",
+        msg: error.message,
+      });
+    }
+  }
+};
+
+const updateEmpData = async (req, res) => {
+  const { task_id } = req.params;
+  try {
+    const { emp_final_remark, task_complete, status, emp_id } = req.body;
+    const employeeData = {
+      emp_final_remark,
+      task_complete,
+      status,
+      emp_id,
+    };
+    const EmployeeModel = new Employee(employeeData);
+    const updateResult = await EmployeeModel.updateEmp(task_id);
+
+    // Access the updated record or response based on the returned result
+    const updatedRecord = updateResult[0]; // Assuming the updated record is returned as the first element
+
+    // Return the updated record or desired response
+    return res.status(200).json(updatedRecord);
   } catch (error) {
     console.log(error);
+    return res.status(400).json({ error: error.message });
   }
 };
 
@@ -73,30 +119,20 @@ const updateData = async (req, res) => {
 
   try {
     const {
-      emp_final_remark,
-      task_complete,
-      status,
-      emp_id,
       emp_name,
       task_priority,
       task_title,
       task_description,
       task_end_date,
-      task_assign_date,
     } = req.body;
 
     const employeeData = {
-      emp_final_remark,
-      task_complete,
-      status,
-      task_id,
-      emp_id,
       emp_name,
       task_priority,
       task_title,
-      task_assign_date,
       task_description,
       task_end_date,
+      task_id,
     };
     console.log(employeeData);
 
@@ -115,4 +151,5 @@ module.exports = {
   getSingleData,
   deleteData,
   updateData,
+  updateEmpData,
 };
