@@ -1,15 +1,23 @@
 const Department = require("../models/department");
 
 const postData = async (req, res) => {
-  console.log(req.body);
   try {
     const { dept_name, dept_location } = req.body;
-    console.log(dept_name, dept_location);
-    const DepartmentModal = new Department(dept_name, dept_location);
-    const createRecord = await DepartmentModal.create();
+    const departmentModel = new Department(dept_name, dept_location);
+
+    // Check if a department with the same name already exists
+    const departmentExists = await departmentModel.exists();
+    if (departmentExists) {
+      return res.status(409).json({
+        error: "Conflict",
+        msg: "Department with the same name already exists.",
+      });
+    }
+
+    const createRecord = await departmentModel.create();
     return res.status(200).json({
       createRecord,
-      msg: "Department Created successfully",
+      msg: "Department created successfully",
     });
   } catch (error) {
     console.log(error);
@@ -21,7 +29,6 @@ const postData = async (req, res) => {
 };
 
 const getData = async (req, res) => {
-  console.log("testing get");
   try {
     const DepartmentModal = await Department.findAll();
     return res.status(200).json(DepartmentModal[0]);
@@ -36,9 +43,7 @@ const getData = async (req, res) => {
 
 const getSingleData = async (req, res) => {
   try {
-    console.log(req.params);
     const { id } = req.params;
-    console.log(id);
     const DepartmentModel = new Department();
     const getSingleRecord = await DepartmentModel.findBydept_id(id);
 
@@ -97,20 +102,34 @@ const updateData = async (req, res) => {
 
   try {
     const { dept_name, dept_location } = req.body;
-    const DepartmentModel = new Department(dept_name, dept_location);
-    const createRecord = await DepartmentModel.updateDepartment(id);
+    const departmentModel = new Department(dept_name, dept_location);
 
-    if (!createRecord) {
-      return res.status(404).json({
-        error: "Not Found",
-        msg: "No department found with the specified ID.",
+    // Check if a department with the same name already exists
+    const departmentExists = await departmentModel.exists();
+    if (departmentExists) {
+      return res.status(409).json({
+        error: "Conflict",
+        msg: "Department with the same name already exists.",
       });
     }
 
-    return res.status(200).json({
-      createRecord,
-      msg: "Department updated successfully",
-    });
+    try {
+      // Attempt to update the department
+      const updateRecord = await departmentModel.updateDepartment(id);
+      return res.status(200).json({
+        updateRecord,
+        msg: "Department updated successfully",
+      });
+    } catch (error) {
+      if (error.message === "No department found with the specified ID.") {
+        return res.status(404).json({
+          error: "Not Found",
+          msg: "No department found with the specified ID.",
+        });
+      } else {
+        throw error;
+      }
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({

@@ -4,7 +4,7 @@ const postData = async (req, res) => {
   try {
     const {
       salary,
-      job,
+      position,
       gender,
       first_name,
       middle_name,
@@ -25,7 +25,7 @@ const postData = async (req, res) => {
     const employeeData = {
       dept_id,
       salary,
-      job,
+      position,
       gender,
       first_name,
       middle_name,
@@ -110,7 +110,7 @@ const updateData = async (req, res) => {
     const {
       dept_id,
       salary,
-      job,
+      position,
       gender,
       first_name,
       middle_name,
@@ -126,7 +126,7 @@ const updateData = async (req, res) => {
     console.log(
       dept_id,
       salary,
-      job,
+      position,
       gender,
       first_name,
       middle_name,
@@ -138,7 +138,7 @@ const updateData = async (req, res) => {
     const employeeData = {
       dept_id,
       salary,
-      job,
+      position,
       gender,
       first_name,
       middle_name,

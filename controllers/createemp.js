@@ -14,11 +14,17 @@ const LoginUser = async (req, res) => {
   const { email, password } = req.body;
   console.log(email, password, "email and password");
   try {
-    const user = await User.login(email, password);
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    const result = await User.login(email, password);
+
+    if (result.error === "EMAIL_NOT_FOUND") {
+      return res.status(401).json({ message: "Email not registered" });
     }
 
+    if (result.error === "INVALID_PASSWORD") {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    const user = result.user;
     const token = createJwtToken(user.id);
     console.log(user.emp_id, "hello");
 
@@ -28,6 +34,8 @@ const LoginUser = async (req, res) => {
     return res.status(200).json({ emp_id: user.emp_id, token, loggedIn: true });
   } catch (error) {
     console.log(error);
+    // Handle other unexpected errors if necessary
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 

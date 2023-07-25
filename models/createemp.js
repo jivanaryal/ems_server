@@ -28,19 +28,23 @@ class User {
     return db.execute(findSql, [email]); // Add return statement
   }
 
+  // Inside the User module
   static async login(email, password) {
     try {
       const [rows] = await this.findByEmail(email);
       if (!rows || rows.length === 0) {
-        return null;
+        // User with the given email not found
+        return { error: "EMAIL_NOT_FOUND" };
       }
 
       const user = rows[0];
       const match = await bcrypt.compare(password, user.password); // Compare the passwords
       if (!match) {
-        return null;
+        // Incorrect password
+        return { error: "INVALID_PASSWORD" };
       }
-      return user;
+
+      return { user }; // Return the user object
     } catch (error) {
       console.log(error);
       throw error;

@@ -3,7 +3,7 @@ class Employee {
   constructor(employeeData) {
     this.dept_id = employeeData.dept_id;
     this.salary = employeeData.salary;
-    this.job = employeeData.job;
+    this.position = employeeData.position;
     this.gender = employeeData.gender;
     this.first_name = employeeData.first_name;
     this.middle_name = employeeData.middle_name;
@@ -14,11 +14,11 @@ class Employee {
 
   create() {
     const createSql =
-      "INSERT INTO employee (dept_id, salary, job, gender, first_name, middle_name, last_name, dept_name,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
+      "INSERT INTO employee (dept_id, salary, position, gender, first_name, middle_name, last_name, dept_name,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
     const values = [
       this.dept_id,
       this.salary,
-      this.job,
+      this.position,
       this.gender,
       this.first_name,
       this.middle_name,
@@ -50,13 +50,13 @@ class Employee {
   updateContact(emp_id) {
     let createSql = `
     UPDATE employee 
-    SET dept_id = ?, salary = ?, job = ?, gender = ?, 
+    SET dept_id = ?, salary = ?, position = ?, gender = ?, 
     first_name = ?, middle_name = ?, last_name = ?, dept_name = ?`;
 
     const values = [
       this.dept_id,
       this.salary,
-      this.job,
+      this.position,
       this.gender,
       this.first_name,
       this.middle_name,
