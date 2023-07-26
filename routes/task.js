@@ -6,11 +6,13 @@ const {
   deleteData,
   updateData,
   updateEmpData,
+  getSingletaskData,
 } = require("../controllers/task");
 
 const router = Router();
 
 router.route("/:id").get(getSingleData);
+router.route("/single/:id").get(getSingletaskData);
 router.route("/").get(getData);
 
 router.route("/:id").post(postData);

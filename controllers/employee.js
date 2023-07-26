@@ -13,8 +13,6 @@ const postData = async (req, res) => {
     } = req.body;
     const files = req.files;
     const imagePaths = files.map((file) => file.path);
-    // const mage = JSON.stringify(imagePaths);
-    // const image = mage[0];
 
     const image = imagePaths[0];
     console.log(image, "hello");

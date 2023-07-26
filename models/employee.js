@@ -26,6 +26,7 @@ class Employee {
       this.dept_name,
       this.image,
     ];
+    console.log(values);
 
     return db.execute(createSql, values);
   }

@@ -5,9 +5,9 @@ class Department {
     this.dept_location = dept_location;
   }
 
-  static findAll(emp_id) {
-    let selectSql = `SELECT * FROM task_history where emp_id = ?`;
-    let values = [emp_id];
+  static findAll(task_id) {
+    let selectSql = `SELECT * FROM task_history where task_id = ?`;
+    let values = [task_id];
     return db.execute(selectSql, values);
   }
 }

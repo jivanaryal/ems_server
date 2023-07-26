@@ -53,6 +53,11 @@ class Employee {
     const values = [emp_id];
     return db.execute(createSql, values);
   }
+  findBytaskId(task_id) {
+    const createSql = "SELECT * FROM task where task_id = ?";
+    const values = [task_id];
+    return db.execute(createSql, values);
+  }
 
   deleteEmployee(emp_id) {
     const createSql = "DELETE FROM task where task_id = ?";

@@ -56,6 +56,18 @@ const getSingleData = async (req, res) => {
     console.log(error);
   }
 };
+const getSingletaskData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const EmployeeModel = new Employee(id);
+    const getSingleRecord = await EmployeeModel.findBytaskId(id);
+
+    return res.status(200).json(getSingleRecord[0]);
+  } catch (error) {
+    console.log(error);
+  }
+};
 const deleteData = async (req, res) => {
   try {
     const { id } = req.params;
@@ -151,5 +163,6 @@ module.exports = {
   getSingleData,
   deleteData,
   updateData,
+  getSingletaskData,
   updateEmpData,
 };
