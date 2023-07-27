@@ -43,9 +43,19 @@ const RegisterUser = async (req, res) => {
   const { id } = req.params;
   const emp_id = id;
   const { email, password } = req.body;
+
   try {
-    const userModal = new User(emp_id, email, password);
-    const [users] = await userModal.create();
+    // If emp_id doesn't exist, proceed with user registration
+    const userModel = new User(emp_id, email, password);
+    // Check if emp_id already exists in the database
+    const existingUser = await userModel.checkUserExist(emp_id);
+    if (existingUser) {
+      return res
+        .status(409)
+        .json({ error: "Employee has already registered." });
+    }
+
+    const [users] = await userModel.create();
 
     const userId = users.insertId;
     console.log(userId);
@@ -58,17 +68,9 @@ const RegisterUser = async (req, res) => {
     return res.status(200).json({ users: userId, created: true });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({ error: "Internal server error." });
   }
 };
-
-// const getNewUsers = async (req, res) => {
-//   try {
-//     const contactModal = await User.findAll();
-//     return res.status(200).json(contactModal[0]);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
 
 const CheckUser = (req, res) => {
   res.send("hello i am from checkuser");

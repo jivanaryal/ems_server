@@ -28,6 +28,18 @@ class User {
     return db.execute(findSql, [email]); // Add return statement
   }
 
+  async checkUserExist(emp_id) {
+    try {
+      const [result] = await db.execute(
+        "SELECT * FROM ems.logintable WHERE emp_id = ?",
+        [emp_id]
+      );
+      return result.length > 0; // If result.length > 0, emp_id already exists
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Inside the User module
   static async login(email, password) {
     try {
