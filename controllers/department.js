@@ -104,14 +104,7 @@ const updateData = async (req, res) => {
     const { dept_name, dept_location } = req.body;
     const departmentModel = new Department(dept_name, dept_location);
 
-    // Check if a department with the same name already exists
-    const departmentExists = await departmentModel.exists();
-    if (departmentExists) {
-      return res.status(409).json({
-        error: "Conflict",
-        msg: "Department with the same name already exists.",
-      });
-    }
+    // Check if a department with the same name and location already exists
 
     try {
       // Attempt to update the department

@@ -25,24 +25,23 @@ class Department {
   }
 
   async updateDepartment(dept_id) {
-    const existingDepartment = await Department.findBydept_id(dept_id);
-
-    if (existingDepartment.length === 0) {
-      throw new Error("No department found with the specified ID.");
-    }
-
-    // If the department name is updated, check if a department with the same name already exists
-    if (
-      this.dept_name !== existingDepartment[0].dept_name &&
-      (await this.exists())
-    ) {
-      throw new Error("Department with the same name already exists.");
-    }
+    // Check if there is any existing department with the same name and different location
 
     const updateSql =
       "UPDATE department SET dept_name = ?, dept_location = ? WHERE dept_id = ?";
     const values = [this.dept_name, this.dept_location, dept_id];
     return db.execute(updateSql, values);
+  }
+
+  static async findByDeptNameAndDifferentLocation(
+    dept_name,
+    dept_location,
+    dept_id
+  ) {
+    const createSql =
+      "SELECT * FROM department WHERE dept_name = ? , dept_location = ? where dept_id = ?";
+    const values = [dept_name, dept_location, dept_id];
+    return db.execute(createSql, values);
   }
 
   static async findAll() {
