@@ -1,5 +1,6 @@
 const User = require("../models/createemp");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const maxTime = 3 * 24 * 60 * 60;
 
@@ -72,6 +73,38 @@ const RegisterUser = async (req, res) => {
   }
 };
 
+const ChangePassword = async (req, res) => {
+  try {
+    const { old_password, new_password } = req.body;
+    const { emp_id } = req.params;
+
+    // Validate the new password (optional)
+    // Add any necessary validation logic here
+
+    // Hash the new password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedNewPassword = bcrypt.hashSync(new_password, salt);
+
+    // Check if the old password is correct
+    const changePasswordModal = new User(
+      emp_id,
+      null,
+      old_password,
+      new_password
+    );
+    const isOldPasswordCorrect = await changePasswordModal.exists();
+    if (isOldPasswordCorrect) {
+      // Update the user's password in the database
+      await changePasswordModal.changePassword(hashedNewPassword);
+      res.status(200).json({ message: "Password changed successfully." });
+    } else {
+      res.status(400).json({ error: "Your Old Password is incorrect." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 const CheckUser = (req, res) => {
   res.send("hello i am from checkuser");
 };
@@ -80,4 +113,5 @@ module.exports = {
   RegisterUser,
   LoginUser,
   CheckUser,
+  ChangePassword,
 };

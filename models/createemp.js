@@ -3,10 +3,11 @@ const bcrypt = require("bcrypt");
 const mysql = require("mysql2/promise");
 
 class User {
-  constructor(emp_id, email, password) {
+  constructor(emp_id, email, password, newpassword) {
     this.emp_id = emp_id;
     this.email = email;
     this.password = password;
+    this.newpassword = newpassword;
   }
   create() {
     const salt = bcrypt.genSaltSync(10);
@@ -16,6 +17,27 @@ class User {
     const values = [this.email, hashedPassword, this.emp_id]; // Use the hashed password
     console.log(values);
     return db.execute(createSql, values);
+  }
+  async exists() {
+    const query = "SELECT password FROM logintable WHERE emp_id = ?";
+    const [rows] = await db.execute(query, [this.emp_id]);
+
+    if (rows.length === 0) {
+      return false; // User with emp_id not found in the database
+    }
+
+    const hashedPasswordInDB = rows[0].password;
+    const isPasswordMatch = await bcrypt.compare(
+      this.password,
+      hashedPasswordInDB
+    );
+    return isPasswordMatch;
+  }
+
+  async changePassword(hashedNewPassword) {
+    const updateSql = "UPDATE logintable SET password = ? WHERE emp_id = ?";
+    const values = [hashedNewPassword, this.emp_id];
+    await db.execute(updateSql, values);
   }
 
   static findAll() {

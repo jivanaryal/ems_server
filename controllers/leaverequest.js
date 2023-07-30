@@ -1,26 +1,29 @@
+const { end } = require("../db/connect");
 const LeaveRequest = require("../models/leaverequest");
 const postLeaveRequest = async (req, res) => {
   try {
     const { start_date, end_date, message } = req.body;
     const { emp_id } = req.params;
-    console.log(start_date, end_date, message, "hello");
 
     const LeaveRequestModal = new LeaveRequest(
       emp_id,
       start_date,
       end_date,
-
       message
     );
-    console.log("hello");
-    const Requested = await LeaveRequestModal.create(emp_id);
-    console.log("hello");
-    return res.status(200).json({
-      Requested: Requested[0],
-      msg: "apply for leave request sucessfully",
-    });
+
+    // This is where we catch the error if there is a pending request.
+    try {
+      const requested = await LeaveRequestModal.create();
+      return res.status(200).json({
+        Requested: requested[0],
+        msg: "Applied for leave request successfully",
+      });
+    } catch (error) {
+      return res.status(409).json({ msg: error.message });
+    }
   } catch (error) {
-    return res.status(400).json({ msg: "cann't post leave request" });
+    return res.status(400).json({ msg: "Cannot post leave request" });
   }
 };
 
@@ -39,6 +42,21 @@ const updateStatus = async (req, res) => {
     return res
       .status(400)
       .json({ msg: "cannot change status of leave request" });
+  }
+};
+const updateLeaveRequest = async (req, res) => {
+  try {
+    const { start_date, end_date, message } = req.body;
+
+    const { leave_id } = req.params;
+
+    const leaveRequest = new LeaveRequest(null, start_date, end_date, message);
+
+    console.log(start_date, end_date, message);
+    const getRequest = await leaveRequest.updateLeaveRequest(leave_id);
+    return res.status(200).json(getRequest[0]);
+  } catch (error) {
+    return res.status(400).json({ msg: "cannot update the leave request" });
   }
 };
 
@@ -64,10 +82,10 @@ const getSignleLeaveRequest = async (req, res) => {
 };
 const deleteRequest = async (req, res) => {
   try {
-    const { emp_id } = req.params;
-    console.log(emp_id);
-    const deleteId = new LeaveRequest(emp_id);
-    const getRequest = await deleteId.deleteRequest(emp_id);
+    const { leave_id } = req.params;
+    console.log(leave_id);
+    const deleteId = new LeaveRequest(leave_id);
+    const getRequest = await deleteId.deleteRequest(leave_id);
     return res.status(200).json(getRequest[0]);
   } catch (error) {
     return res.status(400).json({ msg: "cann't fetch the data" });
@@ -80,4 +98,5 @@ module.exports = {
   getLeaveRequest,
   getSignleLeaveRequest,
   deleteRequest,
+  updateLeaveRequest,
 };

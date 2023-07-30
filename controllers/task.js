@@ -71,6 +71,7 @@ const getSingletaskData = async (req, res) => {
 const deleteData = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const EmployeeModel = new Employee(id);
     const deleteRecord = await EmployeeModel.deleteEmployee(id);
 
