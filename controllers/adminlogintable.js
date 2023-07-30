@@ -1,5 +1,6 @@
 const User = require("../models/adminlogintable");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 const maxTime = 3 * 24 * 60 * 60;
 
@@ -14,23 +15,29 @@ const LoginUser = async (req, res) => {
   const { email, password } = req.body;
   console.log(email, password, "email and password");
   try {
-    const user = await User.login(email, password);
+    const result = await User.login(email, password);
+    // console.log(user);
 
-    if (user.error === "EMAIL_NOT_FOUND") {
+    if (result.error === "EMAIL_NOT_FOUND") {
       return res.status(401).json({ message: "Email not registered" });
     }
 
-    if (user.error === "INVALID_PASSWORD") {
+    if (result.error === "INVALID_PASSWORD") {
       return res.status(401).json({ message: "Invalid password" });
     }
 
-    const token = createJwtToken(user.id);
-    console.log(user, "hello");
+    const token = createJwtToken(result.admin_id);
+
+    const user = result.user;
+
+    console.log(result, "hello");
 
     res.cookie("jwt", token, {
       httpOnly: false,
     });
-    return res.status(200).json({ token, loggedIn: true });
+    return res
+      .status(200)
+      .json({ admin_id: user.admin_id, token, loggedIn: true, jivan: "hello" });
   } catch (error) {
     console.log(error);
     // Handle other unexpected errors if necessary
@@ -58,6 +65,41 @@ const RegisterUser = async (req, res) => {
   }
 };
 
+const ChangePassword = async (req, res) => {
+  try {
+    const { old_password, new_password } = req.body;
+    const { admin_id } = req.params;
+    console.log(old_password, new_password, admin_id);
+
+    // Validate the new password (optional)
+    // Add any necessary validation logic here
+
+    // Hash the new password
+    const salt = bcrypt.genSaltSync(10);
+    const hashedNewPassword = bcrypt.hashSync(new_password, salt);
+    console.log(hashedNewPassword);
+
+    // Check if the old password is correct
+    const changePasswordModal = new User(
+      admin_id,
+      null,
+      old_password,
+      new_password
+    );
+    const isOldPasswordCorrect = await changePasswordModal.exists();
+    console.log(isOldPasswordCorrect);
+    if (isOldPasswordCorrect) {
+      // Update the user's password in the database
+      await changePasswordModal.changePassword(hashedNewPassword);
+      res.status(200).json({ message: "Password changed successfully." });
+    } else {
+      res.status(400).json({ error: "Your Old Password is incorrect." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
 const getNewUsers = async (req, res) => {
   try {
     const contactModal = await User.findAll();
@@ -76,4 +118,5 @@ module.exports = {
   LoginUser,
   getNewUsers,
   CheckUser,
+  ChangePassword,
 };
