@@ -15,10 +15,10 @@ const getData = async (req, res) => {
   }
 };
 const getSingleData = async (req, res) => {
-  const { task_id } = req.params;
+  const { th_id } = req.params;
   console.log("testing get");
   try {
-    const DepartmentModal = await Department.findAll(emp_id);
+    const DepartmentModal = await Department.findById(th_id);
     return res.status(200).json(DepartmentModal[0]);
   } catch (error) {
     console.log(error);
@@ -31,4 +31,5 @@ const getSingleData = async (req, res) => {
 
 module.exports = {
   getData,
+  getSingleData,
 };

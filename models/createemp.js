@@ -13,13 +13,13 @@ class User {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(this.password, salt); // Hash the password
     const createSql =
-      "INSERT INTO logintable(email, password,emp_id) VALUES (?,?,?)";
+      "INSERT INTO employee_login(email, password,emp_id) VALUES (?,?,?)";
     const values = [this.email, hashedPassword, this.emp_id]; // Use the hashed password
     console.log(values);
     return db.execute(createSql, values);
   }
   async exists() {
-    const query = "SELECT password FROM logintable WHERE emp_id = ?";
+    const query = "SELECT password FROM employee_login WHERE emp_id = ?";
     const [rows] = await db.execute(query, [this.emp_id]);
 
     if (rows.length === 0) {
@@ -35,25 +35,25 @@ class User {
   }
 
   async changePassword(hashedNewPassword) {
-    const updateSql = "UPDATE logintable SET password = ? WHERE emp_id = ?";
+    const updateSql = "UPDATE employee_login SET password = ? WHERE emp_id = ?";
     const values = [hashedNewPassword, this.emp_id];
     await db.execute(updateSql, values);
   }
 
   static findAll() {
-    let selectSql = `SELECT * from logintable`;
+    let selectSql = `SELECT * from employee_login`;
     return db.execute(selectSql);
   }
 
   static async findByEmail(email) {
-    const findSql = "SELECT * FROM logintable WHERE email = ?";
+    const findSql = "SELECT * FROM employee_login WHERE email = ?";
     return db.execute(findSql, [email]); // Add return statement
   }
 
   async checkUserExist(emp_id) {
     try {
       const [result] = await db.execute(
-        "SELECT * FROM ems.logintable WHERE emp_id = ?",
+        "SELECT * FROM ems.employee_login WHERE emp_id = ?",
         [emp_id]
       );
       return result.length > 0; // If result.length > 0, emp_id already exists

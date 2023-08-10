@@ -105,11 +105,21 @@ const deleteData = async (req, res) => {
 const updateEmpData = async (req, res) => {
   const { task_id } = req.params;
   try {
-    const { emp_final_remark, task_complete, status, emp_id } = req.body;
+    const {
+      emp_final_remark,
+      task_complete,
+      status,
+      issues,
+      resources,
+      emp_id,
+    } = req.body;
+    console.log(req.body);
     const employeeData = {
       emp_final_remark,
       task_complete,
       status,
+      issues,
+      resources,
       emp_id,
     };
     const EmployeeModel = new Employee(employeeData);

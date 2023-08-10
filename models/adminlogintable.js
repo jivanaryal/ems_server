@@ -11,14 +11,13 @@ class User {
   create() {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(this.password, salt); // Hash the password
-    const createSql =
-      "INSERT INTO adminlogintable(email, password) VALUES (?, ?)";
+    const createSql = "INSERT INTO admin_login(email, password) VALUES (?, ?)";
     const values = [this.email, hashedPassword]; // Use the hashed password
     return db.execute(createSql, values);
   }
 
   async exists() {
-    const query = "SELECT password FROM adminlogintable WHERE admin_id = ?";
+    const query = "SELECT password FROM admin_login WHERE admin_id = ?";
     const [rows] = await db.execute(query, [this.admin_id]);
 
     if (rows.length === 0) {
@@ -34,8 +33,7 @@ class User {
   }
 
   async changePassword(hashedNewPassword) {
-    const updateSql =
-      "UPDATE adminlogintable SET password = ? WHERE admin_id = ?";
+    const updateSql = "UPDATE admin_login SET password = ? WHERE admin_id = ?";
     const values = [hashedNewPassword, this.admin_id];
     await db.execute(updateSql, values);
   }
@@ -46,7 +44,7 @@ class User {
   }
 
   static async findByEmail(email) {
-    const findSql = "SELECT * FROM adminlogintable WHERE email = ?";
+    const findSql = "SELECT * FROM admin_login WHERE email = ?";
     return db.execute(findSql, [email]); // Add return statement
   }
 

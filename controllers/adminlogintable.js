@@ -27,14 +27,14 @@ const LoginUser = async (req, res) => {
     }
 
     const token = createJwtToken(result.admin_id);
+    res.cookie("jwt", token, {
+      withCredentials: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + maxTime * 1000),
+    });
 
     const user = result.user;
 
-    console.log(result, "hello");
-
-    res.cookie("jwt", token, {
-      httpOnly: false,
-    });
     return res
       .status(200)
       .json({ admin_id: user.admin_id, token, loggedIn: true, jivan: "hello" });

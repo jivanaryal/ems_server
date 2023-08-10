@@ -10,6 +10,12 @@ class Department {
     let values = [task_id];
     return db.execute(selectSql, values);
   }
+
+  static findById(th_id) {
+    const createSql = "SELECT * FROM task_history where th_id = ?";
+    const values = [th_id];
+    return db.execute(createSql, values);
+  }
 }
 
 module.exports = Department;

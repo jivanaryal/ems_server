@@ -12,6 +12,8 @@ class Employee {
     this.task_assign_date = employeeData.task_assign_date;
     this.status = employeeData.status;
     this.task_complete = employeeData.task_complete;
+    this.issues = employeeData.issues;
+    this.resources = employeeData.resources;
   }
 
   async create() {
@@ -25,7 +27,7 @@ class Employee {
       }
 
       const createSql =
-        "INSERT INTO task (emp_id, emp_name, task_priority, task_title, task_description, task_end_date, task_assign_date, status, task_complete, emp_final_remark) VALUES (?, ?, ?, ?, ?, ?, STR_TO_DATE(?, '%Y-%m-%d'), 'pending', 0, 'not updated yet')";
+        "INSERT INTO task (emp_id, emp_name, task_priority, task_title, task_description, task_end_date, task_assign_date, status) VALUES (?, ?, ?, ?, ?, ?, STR_TO_DATE(?, '%Y-%m-%d'), 'pending')";
       const currentDate = new Date().toISOString().slice(0, 10);
       const values = [
         this.emp_id,
@@ -44,7 +46,8 @@ class Employee {
 
   static findAll() {
     console.log("getting data");
-    let selectSql = `SELECT * from employee e join task t on e.emp_id=t.emp_id`;
+    let selectSql = `SELECT * from employee e join task t on e.emp_id=t.emp_id LEFT JOIN 
+    task_history th ON t.task_id = th.task_id`;
     return db.execute(selectSql);
   }
 
@@ -66,23 +69,20 @@ class Employee {
   }
 
   async updateEmp(task_id) {
-    const updateSql = `UPDATE task SET emp_final_remark=?, task_complete=?, status=? WHERE task_id=?`;
-    const values = [
-      this.emp_final_remark,
-      this.task_complete,
-      this.status,
-      task_id,
-    ];
+    const updateSql = `UPDATE task SET status=?  WHERE task_id=?`;
+    const values = [this.status, task_id];
+    console.log(values);
 
     const taskHistorySql = `
-    INSERT INTO task_history (task_id, emp_final_remark, status, task_complete, time, emp_id)
-    VALUES (?, ?, ?, ?, NOW(), ?)`;
+    INSERT INTO task_history (task_id, emp_final_remark, status, task_complete, time,issues,resources)
+    VALUES (?, ?, ?, ?, NOW(),?,?)`;
     const taskHistoryValues = [
       task_id,
       this.emp_final_remark,
       this.status,
       this.task_complete,
-      this.emp_id,
+      this.issues,
+      this.resources,
     ];
 
     try {
