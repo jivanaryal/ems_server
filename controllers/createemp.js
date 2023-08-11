@@ -12,13 +12,13 @@ const createJwtToken = (id) => {
 
 const LoginUser = async (req, res) => {
   console.log(req.body);
-  const { email, password } = req.body;
-  console.log(email, password, "email and password");
+  const { userName, password } = req.body;
+  console.log(userName, password, "userName and password");
   try {
-    const result = await User.login(email, password);
+    const result = await User.login(userName, password);
 
-    if (result.error === "EMAIL_NOT_FOUND") {
-      return res.status(401).json({ message: "Email not registered" });
+    if (result.error === "userName_NOT_FOUND") {
+      return res.status(401).json({ message: "No userName Found" });
     }
 
     if (result.error === "INVALID_PASSWORD") {
@@ -43,11 +43,11 @@ const LoginUser = async (req, res) => {
 const RegisterUser = async (req, res) => {
   const { id } = req.params;
   const emp_id = id;
-  const { email, password } = req.body;
+  const { userName, password } = req.body;
 
   try {
     // If emp_id doesn't exist, proceed with user registration
-    const userModel = new User(emp_id, email, password);
+    const userModel = new User(emp_id, userName, password);
     // Check if emp_id already exists in the database
     const existingUser = await userModel.checkUserExist(emp_id);
     if (existingUser) {

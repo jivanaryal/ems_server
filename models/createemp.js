@@ -3,9 +3,9 @@ const bcrypt = require("bcrypt");
 const mysql = require("mysql2/promise");
 
 class User {
-  constructor(emp_id, email, password, newpassword) {
+  constructor(emp_id, userName, password, newpassword) {
     this.emp_id = emp_id;
-    this.email = email;
+    this.userName = userName;
     this.password = password;
     this.newpassword = newpassword;
   }
@@ -13,8 +13,8 @@ class User {
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(this.password, salt); // Hash the password
     const createSql =
-      "INSERT INTO employee_login(email, password,emp_id) VALUES (?,?,?)";
-    const values = [this.email, hashedPassword, this.emp_id]; // Use the hashed password
+      "INSERT INTO employee_login(userName, password,emp_id) VALUES (?,?,?)";
+    const values = [this.userName, hashedPassword, this.emp_id]; // Use the hashed password
     console.log(values);
     return db.execute(createSql, values);
   }
@@ -45,15 +45,15 @@ class User {
     return db.execute(selectSql);
   }
 
-  static async findByEmail(email) {
-    const findSql = "SELECT * FROM employee_login WHERE email = ?";
-    return db.execute(findSql, [email]); // Add return statement
+  static async findByEmail(userName) {
+    const findSql = "SELECT * FROM employee_login WHERE userName = ?";
+    return db.execute(findSql, [userName]); // Add return statement
   }
 
   async checkUserExist(emp_id) {
     try {
       const [result] = await db.execute(
-        "SELECT * FROM ems.employee_login WHERE emp_id = ?",
+        "SELECT * FROM ems.employee_login WHERE userName = ?",
         [emp_id]
       );
       return result.length > 0; // If result.length > 0, emp_id already exists
@@ -63,12 +63,13 @@ class User {
   }
 
   // Inside the User module
-  static async login(email, password) {
+  static async login(userName, password) {
     try {
-      const [rows] = await this.findByEmail(email);
+      const [rows] = await this.findByEmail(userName);
       if (!rows || rows.length === 0) {
         // User with the given email not found
-        return { error: "EMAIL_NOT_FOUND" };
+        return { error: "userName_NOT_FOUND" };
+        console.log(userName, password, "hello ji");
       }
 
       const user = rows[0];
