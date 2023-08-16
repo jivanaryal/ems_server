@@ -69,6 +69,14 @@ const RegisterUser = async (req, res) => {
     return res.status(200).json({ users: userId, created: true });
   } catch (error) {
     console.log(error);
+
+    // Check if the error is a duplicate entry error
+    if (error.code === "ER_DUP_ENTRY") {
+      // Extract and send the error message to the frontend
+      const errorMessage = error.sqlMessage;
+      return res.status(409).json({ error: errorMessage });
+    }
+
     return res.status(500).json({ error: "Internal server error." });
   }
 };
